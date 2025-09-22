@@ -1,0 +1,44 @@
+/* admin.css */
+
+/* Container for admin functions */
+.admin-functions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 30px auto;
+    max-width: 600px;
+    text-align: center;
+  }
+  
+  /* Style for admin function buttons */
+  .admin-functions button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .admin-functions button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Style for input fields in the admin page */
+  .admin-functions input[type="text"] {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+  }
+  
+  /* Message display styling */
+  #adminMessage {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  

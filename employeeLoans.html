@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee - Manage Loans</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/employeeLoans.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="left">
+      <a href="employee.html"><img src="images/bankLogo.jpg" alt="Bank Logo"></a>
+      <h1><a href="employee.html">BANK OF VELLORIAN</a></h1>
+    </div>
+    <div class="right">
+      <button id="empLogout">Logout</button>
+    </div>
+  </div>
+  
+  <!-- Sub-navbar -->
+  <div class="sub-navbar">
+    <a href="employee.html">Dashboard</a>
+    <a href="employeeLoans.html">Loan Approvals</a>
+    <a href="employeeComplaints.html">Manage Complaints</a>
+  </div>
+  
+  <div class="main-content">
+    <h2>Manage Loan Applications</h2>
+    
+    <!-- Sorting Controls -->
+    <div class="sorting-controls">
+      <label for="sortField">Sort by:</label>
+      <select id="sortField">
+        <option value="applied_timestamp">Time Applied</option>
+        <option value="status">Status</option>
+        <option value="amount">Amount</option>
+      </select>
+      
+      <label for="sortOrder">Order:</label>
+      <select id="sortOrder">
+        <option value="asc">Ascending</option>
+        <option value="desc" selected>Descending</option>
+      </select>
+      
+      <button id="applySort">Apply Sort</button>
+    </div>
+    
+    <!-- Loans List -->
+    <div id="loansList">
+      <!-- Loan items will be dynamically inserted here -->
+    </div>
+  </div>
+  
+  <script src="js/script.js"></script>
+  <script>
+    // Logout functionality
+    document.getElementById('empLogout').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', { method: 'POST' });
+        if(response.ok) {
+          window.location.href = 'index.html';
+        } else {
+          console.error('Logout failed:', response.statusText);
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    });
+    
+    async function loadEmployeeLoans(sortField = 'applied_timestamp', sortOrder = 'desc') {
+      try {
+        const response = await fetch(`/employee/loans?sort_by=${sortField}&order=${sortOrder}`);
+        if(response.ok) {
+          const loans = await response.json();
+          const container = document.getElementById('loansList');
+          container.innerHTML = ''; // Clear existing content
+          
+          loans.forEach(loan => {
+            // Create a div for each loan item
+            const loanDiv = document.createElement('div');
+            loanDiv.classList.add('loan-item');
+            // Highlight approved loans in green, pending in red
+            if (loan.status === 'APPROVED') {
+              loanDiv.classList.add('approved');
+            } else {
+              loanDiv.classList.add('pending');
+            }
+            // Build inner content including the "Applied by" field:
+            loanDiv.innerHTML = `
+              <div class="loan-overview">
+                <span class="loan-id">${loan.loan_id}</span>
+                <span class="loan-type">${loan.loan_type}</span>
+                <span class="loan-amount">₹${new Intl.NumberFormat('en-IN').format(loan.amount)}</span>
+                <span class="loan-status">${loan.status}</span>
+                <span class="loan-applier">Applied by: ${loan.applier}</span>
+                <span class="loan-applied">Applied: ${new Date(loan.applied_timestamp).toLocaleDateString('en-GB')} ${new Date(loan.applied_timestamp).toLocaleTimeString()}</span>
+                ${loan.status === 'APPROVED' && loan.approval_timestamp ? `<span class="loan-approved">Approved: ${new Date(loan.approval_timestamp).toLocaleDateString('en-GB')} ${new Date(loan.approval_timestamp).toLocaleTimeString()}</span>` : ''}
+                ${loan.status === 'APPROVED' && loan.approver ? `<span class="loan-approver">Approved By: ${loan.approver}</span>` : ''}
+                ${loan.status !== 'APPROVED' ? `<button class="approveLoanBtn" data-loanid="${loan.loan_id}">Approve</button>` : ''}
+                <button class="toggleDetails">Details</button>
+              </div>
+              <div class="loan-details" style="display: none;">
+                <p>${loan.message}</p>
+              </div>
+            `;
+            // Toggle details on button click
+            loanDiv.querySelector('.toggleDetails').addEventListener('click', function() {
+              const details = loanDiv.querySelector('.loan-details');
+              details.style.display = details.style.display === 'none' ? 'block' : 'none';
+            });
+            // Approve button handler for pending loans
+            const approveBtn = loanDiv.querySelector('.approveLoanBtn');
+            if (approveBtn) {
+              approveBtn.addEventListener('click', async function() {
+                const loanId = this.getAttribute('data-loanid');
+                try {
+                  const response = await fetch('/employee/approveLoan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ loan_id: loanId })
+                  });
+                  if(response.ok) {
+                    loadEmployeeLoans(sortField, sortOrder); // Reload loans after approval
+                  } else {
+                    console.error('Approval failed:', await response.text());
+                  }
+                } catch(error) {
+                  console.error('Error approving loan:', error);
+                }
+              });
+            }
+            container.appendChild(loanDiv);
+          });
+        } else {
+          console.error('Error fetching loans:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching loans:', error);
+      }
+    }
+    
+    // Initial load
+    loadEmployeeLoans();
+    
+    // Apply sort button
+    document.getElementById('applySort').addEventListener('click', () => {
+      const sortField = document.getElementById('sortField').value;
+      const sortOrder = document.getElementById('sortOrder').value;
+      loadEmployeeLoans(sortField, sortOrder);
+    });
+  </script>
+</body>
+</html>

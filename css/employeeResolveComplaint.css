@@ -1,0 +1,80 @@
+/* employeeResolveComplaint.css */
+
+/* Main Content Styling */
+.main-content {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.main-content h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Complaint item container */
+.complaint-item {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 15px;
+  transition: background-color 0.3s ease;
+}
+
+/* Unresolved complaints: red background */
+.complaint-item.unresolved {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+/* Resolved complaints: green background */
+.complaint-item.resolved {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+/* Complaint Overview */
+.complaint-overview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.complaint-overview span {
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.complaint-overview button {
+  padding: 5px 10px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.complaint-overview button:hover {
+  background-color: #0056b3;
+}
+
+/* Complaint Details */
+.complaint-details {
+  margin-top: 10px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+  font-size: 0.9rem;
+}
+
+/* Resolution message textarea styling */
+.resolutionMessage {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}

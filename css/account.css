@@ -1,0 +1,155 @@
+/* Account page specific styles */
+.account-options {
+  padding: 20px;
+  display: flex;
+  justify-content: space-around;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin: 20px;
+  border-radius: 10px;
+}
+.account-options button {
+  background-color: #007BFF;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+.account-options button:hover {
+  background-color: #0056b3;
+}
+.account-windows {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* General window styling */
+.account-windows .window {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  min-height: 400px;
+}
+
+/* Override widths for left and right windows */
+.account-windows .left-window {
+  flex: 0 0 30%;
+}
+.account-windows .right-window {
+  flex: 0 0 70%;
+}
+
+/* New styles for the balance container and options in the left window */
+.balance-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.balance-container h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+.balance-display {
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 15px 20px;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.balance-display:hover {
+  background-color: #007BFF; /* Same as default */
+  cursor: default;
+}
+
+.account-options-list a {
+  display: block;
+  background-color: #e0e0e0;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.account-options-list a:hover {
+  background-color: #e0e0e0;
+  cursor: default;
+}
+
+/* Right Window: Transactions */
+
+/* Container for the list of transactions */
+.transactions-container {
+  margin-top: 20px;
+}
+
+/* Style for each transaction box */
+.transaction-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+/* Credit transactions (approved) - Light green */
+.transaction-box.credit {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+/* Debit transactions - Light red */
+.transaction-box.debit {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+/* Pending transactions - Light yellow */
+.transaction-box.pending {
+  background-color: #fff3cd; /* Light yellow */
+  border: 1px solid #ffeeba;
+}
+.transaction-box.rejected {
+  background-color: #B39DDB; 
+  border: 1px solid #B39DDB; 
+}
+
+.transaction-box.reversed {
+  background-color: lightskyblue; /* Light skyblue */
+  border: 1px solid lightskyblue;
+}
+
+
+.transaction-box span {
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* View More Button Styles */
+.view-more-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.view-more-btn {
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.view-more-btn:hover {
+  background-color: #0056b3;
+}

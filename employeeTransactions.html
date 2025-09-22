@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee - Approve/Rejection of Large Transactions</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/employeeTransactions.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="left">
+      <a href="employee.html"><img src="images/bankLogo.jpg" alt="Bank Logo"></a>
+      <h1><a href="employee.html">BANK OF VELLORIAN</a></h1>
+    </div>
+    <div class="right">
+      <button id="empLogout">Logout</button>
+    </div>
+  </div>
+  
+  <!-- Sub-navbar -->
+  <div class="sub-navbar">
+    <a href="employee.html">Dashboard</a>
+    <a href="employeeLoans.html">Loan Approvals</a>
+    <a href="employeeTransactions.html">Approve Transactions &gt; 50,000</a>
+    <a href="employeeResolveComplaint.html">Resolve Complaints</a>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <h2>Pending Large Transactions (Over ₹50,000)</h2>
+    <!-- Container for pending transactions -->
+    <div id="transactionsContainer">
+      <!-- Pending transactions will be dynamically inserted here -->
+    </div>
+  </div>
+  
+  <script src="js/script.js"></script>
+  <script>
+    // Logout functionality
+    document.getElementById('empLogout').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', { method: 'POST' });
+        if(response.ok) {
+          window.location.href = 'index.html';
+        } else {
+          console.error('Logout failed:', response.statusText);
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    });
+    
+    // Function to load pending large transactions
+    async function loadPendingTransactions() {
+      try {
+        const response = await fetch('/employee/pendingTransactions');
+        if(response.ok) {
+          const transactions = await response.json();
+          const container = document.getElementById('transactionsContainer');
+          container.innerHTML = ""; // Clear existing content
+          
+          transactions.forEach(txn => {
+            const txnDiv = document.createElement('div');
+            txnDiv.classList.add('transaction-item', 'pending-large'); // pending-large style will be updated in CSS (light purple for rejected will be separate)
+  
+            txnDiv.innerHTML = `
+              <div class="txn-overview">
+                <span class="txn-id">${txn.txn_id}</span>
+                <span class="txn-sender">${txn.sender}</span>
+                <span class="txn-receiver">${txn.receiver}</span>
+                <span class="txn-amount">₹${new Intl.NumberFormat('en-IN').format(txn.amount)}</span>
+                <span class="txn-datetime">${new Date(txn.timestamp).toLocaleDateString('en-GB')} ${new Date(txn.timestamp).toLocaleTimeString()}</span>
+                <button class="approveTxnBtn" data-txnid="${txn.txn_id}">Approve</button>
+                <button class="rejectTxnBtn" data-txnid="${txn.txn_id}">Reject</button>
+              </div>
+              <div class="txn-details" style="display: none;">
+                <p>Status: ${txn.status}</p>
+              </div>
+            `;
+  
+            // Approve button handler
+            txnDiv.querySelector('.approveTxnBtn').addEventListener('click', async function() {
+              const txnId = this.getAttribute('data-txnid');
+              try {
+                const response = await fetch('/employee/approveLargeTransaction', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ txn_id: txnId })
+                });
+                if(response.ok) {
+                  loadPendingTransactions();
+                } else {
+                  console.error('Approval failed:', await response.text());
+                }
+              } catch(error) {
+                console.error('Error approving transaction:', error);
+              }
+            });
+  
+            // Reject button handler
+            txnDiv.querySelector('.rejectTxnBtn').addEventListener('click', async function() {
+              const txnId = this.getAttribute('data-txnid');
+              try {
+                const response = await fetch('/employee/rejectLargeTransaction', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ txn_id: txnId })
+                });
+                if(response.ok) {
+                  loadPendingTransactions();
+                } else {
+                  console.error('Rejection failed:', await response.text());
+                }
+              } catch(error) {
+                console.error('Error rejecting transaction:', error);
+              }
+            });
+  
+            // Toggle details on click
+            txnDiv.querySelector('.txn-overview').addEventListener('click', function() {
+              const details = txnDiv.querySelector('.txn-details');
+              details.style.display = details.style.display === 'none' ? 'block' : 'none';
+            });
+  
+            container.appendChild(txnDiv);
+          });
+        } else {
+          console.error('Error fetching pending transactions:', response.statusText);
+        }
+      } catch(error) {
+        console.error('Error fetching pending transactions:', error);
+      }
+    }
+    
+    // Initial load and auto-refresh every 10 seconds
+    loadPendingTransactions();
+    setInterval(loadPendingTransactions, 10000);
+  </script>
+</body>
+</html>

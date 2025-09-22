@@ -1,0 +1,78 @@
+/* employeeTransactions.css */
+
+/* Main content styling */
+.main-content {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  .main-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Container for transactions */
+  #transactionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* Each transaction item */
+  .transaction-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* For pending large transactions, use a light yellow background */
+  .transaction-item.pending-large {
+    background-color: #fff3cd;  /* Light yellow */
+    border-color: #ffeeba;
+  }
+  .transaction-item.rejected {
+    background-color: purple; /* Light lavender */
+    border: 1px solid purple; /* Thistle border */
+  }
+  
+  
+  /* Transaction overview */
+  .txn-overview {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  
+  .txn-overview span {
+    flex: 1;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  /* Approve button styling */
+  .txn-overview button {
+    padding: 5px 10px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .txn-overview button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Transaction details (hidden by default) */
+  .txn-details {
+    margin-top: 10px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    font-size: 0.9rem;
+  }
+  

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bank of Vellorian - Employee</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/employee.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="left">
+      <a href="employee.html"><img src="images/bankLogo.jpg" alt="Bank Logo" /></a>
+      <h1><a href="employee.html">BANK OF VELLORIAN</a></h1>
+    </div>
+    <div class="right">
+      <button id="emp-logout">Logout</button>
+    </div>
+  </div>
+  
+  <!-- Updated Sub-navbar with new complaint links -->
+  <div class="sub-navbar">
+    <a href="employee.html">Dashboard</a>
+    <a href="employeeFileComplaint.html">File Complaint</a>
+    <a href="employeeResolveComplaint.html">Resolve Complaints</a>
+    <a href="employeeLoans.html">Loan Approvals</a>
+    <a href="employeeTransactions.html">Approve Transactions &gt; 50,000</a>
+  </div>
+  
+  <!-- Main Content: Employee Functions -->
+  <div class="main-content">
+    <div class="employee-functions" style="text-align:center; margin:20px;">
+      <button onclick="window.location.href='employeeLoans.html'">Manage Loan Applications</button>
+      <button onclick="window.location.href='employeeResolveComplaint.html'">Resolve Complaints</button>
+      <button onclick="window.location.href='employeeTransactions.html'">Approve Transactions &gt; 50,000</button>
+      <button onclick="window.location.href='employeeFileComplaint.html'">File Complaint for Admin</button>
+    </div>
+    <div id="employeeMessage" style="text-align:center; margin-top:20px; font-weight:bold;"></div>
+  </div>
+
+  <script>
+    // Existing functions (approveLoans, answerComplaints, approveLargeTransactions, fileComplaint)
+    // can remain if used elsewhere, but here we're using window.location.href for navigation.
+    document.getElementById('emp-logout').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', { method: 'POST' });
+        if(response.ok) {
+          window.location.href = 'index.html';
+        } else {
+          console.error('Logout failed:', response.statusText);
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

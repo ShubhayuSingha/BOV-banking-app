@@ -1,0 +1,122 @@
+/* applyLoan.css */
+
+/* Loan Application Form */
+.loan-application-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .loan-application-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .loan-application-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  
+  .loan-application-form select,
+  .loan-application-form input[type="number"],
+  .loan-application-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .loan-application-form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .loan-application-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Form Message */
+  .form-message {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  /* Past Loans Section */
+  .past-loans {
+    width: 100%;
+    max-width: 600px;
+    margin: 40px auto;
+  }
+  
+  .past-loans h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Each Loan Item */
+  .loan-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    padding: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .loan-item.approved {
+    background-color: #d4edda; /* Light green */
+    border-color: #c3e6cb;
+  }
+  
+  .loan-item.not-approved {
+    background-color: #f8d7da; /* Light red */
+    border-color: #f5c6cb;
+  }
+  
+  .loan-overview {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .loan-overview span {
+    flex: 1;
+    text-align: center;
+    margin: 5px;
+  }
+  
+  .loan-overview button {
+    padding: 5px 10px;
+    background-color: #007BFF;
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .loan-overview button:hover {
+    background-color: #0056b3;
+  }
+  
+  .loan-details {
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    font-size: 0.9rem;
+  }
+  

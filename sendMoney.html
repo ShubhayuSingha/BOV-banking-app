@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Send Money - Bank of Vellorian</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/sendMoney.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="left">
+      <a href="account.html"><img src="images/bankLogo.jpg" alt="Bank Logo" /></a>
+      <h1><a href="account.html">BANK OF VELLORIAN</a></h1>
+    </div>
+    <div class="right">
+      <button id="nav-logout">Logout</button>
+    </div>
+  </div>
+  <div class="sub-navbar">
+    <a href="account.html">ACCOUNT</a>
+    <a href="applyLoan.html">LOANS</a>
+    <a href="sendMoney.html">MONEY-TRANSFER</a>
+    <a href="fileComplaint.html">COMPLAINTS</a>    
+    <div class="dropdown">
+      <button class="dropbtn">▼</button>
+      <div class="dropdown-content">
+        <a href="#">PENSIONS</a>
+        <a href="#">OFFERS</a>
+        <a href="#">SUPPORT</a>
+        <a href="#">ATM</a>
+        <a href="#">NRI</a>
+        <a href="#">EMI</a>
+      </div>
+    </div>
+  </div>
+  <!-- Main Content: Send Money Form -->
+  <div class="main-content">
+    <div class="send-money-form">
+      <h2>Send Money</h2>
+      <form id="sendMoneyForm" action="#" method="post">
+        <label for="recipient">Recipient Username:</label>
+        <input type="text" id="recipient" name="recipient" required />
+
+        <label for="amount">Amount (INR):</label>
+        <input type="number" id="amount" name="amount" step="0.01" required />
+
+        <button type="submit">Send</button>
+      </form>
+      <div id="sendMoneyError"></div>
+      <div id="sendMoneySuccess"></div>
+    </div>
+  </div>
+  
+  <script src="js/script.js"></script>
+  <script>
+    // Logout functionality
+    document.getElementById('nav-logout').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', { method: 'POST' });
+        if (response.ok) {
+          window.location.href = 'index.html';
+        } else {
+          console.error('Logout failed:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
+    });
+
+    // Handle the send money form submission
+    document.getElementById('sendMoneyForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = {
+        recipient: formData.get('recipient'),
+        amount: parseFloat(formData.get('amount'))
+      };
+
+      try {
+        const response = await fetch('/sendMoney', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (response.ok) {
+          const result = await response.text();
+          if (result === 'success') {
+            document.getElementById('sendMoneySuccess').innerText = 'Money sent successfully!';
+            document.getElementById('sendMoneyError').innerText = '';
+          } else {
+            document.getElementById('sendMoneyError').innerText = result;
+            document.getElementById('sendMoneySuccess').innerText = '';
+          }
+        } else {
+          const errorText = await response.text();
+          document.getElementById('sendMoneyError').innerText = errorText;
+          document.getElementById('sendMoneySuccess').innerText = '';
+        }
+      } catch (error) {
+        console.error('Error sending money:', error);
+        document.getElementById('sendMoneyError').innerText = 'Server error. Please try again later.';
+      }
+    });
+  </script>
+</body>
+</html>

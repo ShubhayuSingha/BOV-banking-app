@@ -1,0 +1,83 @@
+[
+    {
+      "account": "123456789",
+      "name": "Aayush Kumar Singh",
+      "date": "2025-02-16",
+      "time": "14:30",
+      "type": "Credit",
+      "amount": "₹ 1000.00"
+    },
+    {
+      "account": "987654321",
+      "name": "Uday Singh",
+      "date": "2025-02-15",
+      "time": "10:45",
+      "type": "Debit",
+      "amount": "₹ 250.00"
+    },
+    {
+      "account": "111222333",
+      "name": "Satyajit Panda",
+      "date": "2025-02-14",
+      "time": "09:15",
+      "type": "Credit",
+      "amount": "₹ 500.00"
+    },
+    {
+      "account": "444555666",
+      "name": "Suryabrata Sahoo",
+      "date": "2025-02-13",
+      "time": "11:30",
+      "type": "Debit",
+      "amount": "₹ 300.00"
+    },
+    {
+      "account": "777888999",
+      "name": "Avula Sreenivasulu",
+      "date": "2025-02-12",
+      "time": "16:20",
+      "type": "Debit",
+      "amount": "₹ 750.00"
+    },
+    {
+      "account": "112233445",
+      "name": "Swami Vivekananda",
+      "date": "2025-02-11",
+      "time": "12:00",
+      "type": "Debit",
+      "amount": "₹ 100.00"
+    },
+    {
+      "account": "556677889",
+      "name": "Ratan Tata",
+      "date": "2025-02-10",
+      "time": "14:50",
+      "type": "Credit",
+      "amount": "₹ 1200.00"
+    },
+    {
+      "account": "998877665",
+      "name": "Mukesh Ambani",
+      "date": "2025-02-09",
+      "time": "13:10",
+      "type": "Debit",
+      "amount": "₹ 450.00"
+    },
+    {
+      "account": "443322110",
+      "name": "Jagan Mohan Reddy",
+      "date": "2025-02-08",
+      "time": "15:25",
+      "type": "Credit",
+      "amount": "₹ 600.00"
+    },
+    {
+      "account": "221100334",
+      "name": "Chandrababu Naidu",
+      "date": "2025-02-07",
+      "time": "10:05",
+      "type": "Debit",
+      "amount": "₹ 350.00"
+    }
+  ]
+  

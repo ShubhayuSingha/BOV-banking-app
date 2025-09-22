@@ -1,0 +1,51 @@
+/* fileComplaint.css */
+.main-content {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  button {
+    padding: 10px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  .form-message {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  .complaint-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+  }
+  .complaint-item.resolved {
+    background-color: #d4edda; /* Light green */
+    border-color: #c3e6cb;
+  }
+  .complaint-item.unresolved {
+    background-color: #f8d7da; /* Light red */
+    border-color: #f5c6cb;
+  }
+  

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Complaint - Bank of Vellorian</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/fileComplaint.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="left">
+      <a href="account.html"><img src="images/bankLogo.jpg" alt="Bank Logo" /></a>
+      <h1><a href="account.html">BANK OF VELLORIAN</a></h1>
+    </div>
+    <div class="right">
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </div>
+  <div class="sub-navbar">
+    <a href="account.html">ACCOUNT</a>
+    <a href="applyLoan.html">LOANS</a>
+    <a href="sendMoney.html">MONEY-TRANSFER</a>
+    <a href="fileComplaint.html">COMPLAINTS</a>    
+    <div class="dropdown">
+      <button class="dropbtn">▼</button>
+      <div class="dropdown-content">
+        <a href="#">PENSIONS</a>
+        <a href="#">OFFERS</a>
+        <a href="#">SUPPORT</a>
+        <a href="#">ATM</a>
+        <a href="#">NRI</a>
+        <a href="#">EMI</a>
+      </div>
+    </div>
+  </div>
+  <!-- Main Content: File Complaint -->
+  <div class="main-content">
+    <h2>File a Complaint</h2>
+    <form id="complaintForm">
+      <label for="c_message">Describe your issue:</label>
+      <textarea id="c_message" name="c_message" rows="5" placeholder="Enter your complaint details here..." required></textarea>
+      <button type="submit">Submit Complaint</button>
+    </form>
+    <div id="complaintMessage" class="form-message"></div>
+    <h3>Your Previous Complaints</h3>
+    <div id="complaintsList">
+      <!-- Previous complaints will be loaded here -->
+    </div>
+  </div>
+  
+  <script src="js/script.js"></script>
+  <script>
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', { method: 'POST' });
+        if(response.ok) {
+          window.location.href = 'index.html';
+        } else {
+          console.error('Logout failed:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
+    
+    // Handle complaint form submission
+    document.getElementById('complaintForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const c_message = document.getElementById('c_message').value;
+      try {
+        const response = await fetch('/customer/complaint', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ c_message })
+        });
+        const result = await response.text();
+        document.getElementById('complaintMessage').innerText = result;
+        if(response.ok) {
+          loadComplaints();
+          document.getElementById('complaintForm').reset();
+        }
+      } catch (error) {
+        console.error('Error filing complaint:', error);
+        document.getElementById('complaintMessage').innerText = 'Server error. Please try again later.';
+      }
+    });
+    
+    // Load previous complaints
+    async function loadComplaints() {
+      try {
+        const response = await fetch('/customer/complaints');
+        if(response.ok) {
+          const complaints = await response.json();
+          const container = document.getElementById('complaintsList');
+          container.innerHTML = '';
+          complaints.forEach(comp => {
+            const compDiv = document.createElement('div');
+            compDiv.classList.add('complaint-item', comp.status === 'resolved' ? 'resolved' : 'unresolved');
+            compDiv.innerHTML = `
+              <p><strong>ID:</strong> ${comp.ccomp_id}</p>
+              <p><strong>Message:</strong> ${comp.c_message}</p>
+              <p><strong>Status:</strong> ${comp.status}</p>
+              <p><strong>Applied:</strong> ${new Date(comp.applied_timestamp).toLocaleString('en-GB')}</p>
+              ${comp.status === 'resolved' ? `<p><strong>Resolved:</strong> ${new Date(comp.resolved_timestamp).toLocaleString('en-GB')}</p>
+              <p><strong>Resolver:</strong> ${comp.resolver}</p>
+              <p><strong>Response:</strong> ${comp.e_message}</p>` : ''}
+            `;
+            container.appendChild(compDiv);
+          });
+        } else {
+          console.error('Error fetching complaints:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching complaints:', error);
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadComplaints);
+  </script>
+</body>
+</html>

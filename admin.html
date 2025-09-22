@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bank of Vellorian - Admin</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="left">
+      <a href="admin.html"><img src="images/bankLogo.jpg" alt="Bank Logo" /></a>
+      <h1><a href="admin.html">BANK OF VELLORIAN</a></h1>
+    </div>
+    <div class="right">
+      <button id="adm-logout">Logout</button>
+    </div>
+  </div>
+  
+  <!-- Sub-navbar with link to resolve employee complaints -->
+  <div class="sub-navbar">
+    <a href="admin.html">Dashboard</a>
+    <a href="adminResolveComplaint.html">Resolve Employee Complaints</a>
+  </div>
+  
+  <!-- Main Content: Admin Functions -->
+  <div class="main-content">
+    <div class="admin-functions" style="text-align:center; margin:20px;">
+      <button onclick="window.location.href='adminResolveComplaint.html'">Answer Employee Complaints</button>
+      <br/><br/>
+      <label for="reverseTxnId">Transaction ID to Reverse:</label>
+      <input type="text" id="reverseTxnId" placeholder="e.g., TXN00001" />
+      <button onclick="reverseTransaction()">Reverse Transaction</button>
+    </div>
+    <div id="adminMessage" style="text-align:center; margin-top:20px; font-weight:bold;"></div>
+  </div>
+
+  <script>
+    function answerEmployeeComplaints(){
+      fetch('/admin/answerComplaint', { method: 'POST' })
+        .then(res => res.text())
+        .then(msg => document.getElementById('adminMessage').innerText = msg)
+        .catch(err => console.error(err));
+    }
+    function reverseTransaction(){
+      const txnId = document.getElementById('reverseTxnId').value.trim();
+      if(!txnId){
+        alert('Please enter a transaction ID.');
+        return;
+      }
+      fetch('/admin/reverseTransaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ txn_id: txnId })
+      })
+      .then(res => res.text())
+      .then(msg => document.getElementById('adminMessage').innerText = msg)
+      .catch(err => console.error(err));
+    }
+  
+    document.getElementById('adm-logout').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', { method: 'POST' });
+        if(response.ok) {
+          window.location.href = 'index.html';
+        } else {
+          console.error('Logout failed:', response.statusText);
+        }
+      } catch(err) {
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

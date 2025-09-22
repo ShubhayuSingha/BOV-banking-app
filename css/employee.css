@@ -1,0 +1,35 @@
+/* employee.css */
+
+/* Container for employee functions */
+.employee-functions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 30px auto;
+    max-width: 600px;
+    text-align: center;
+  }
+  
+  /* Style for employee function buttons */
+  .employee-functions button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .employee-functions button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Message display styling */
+  #employeeMessage {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  

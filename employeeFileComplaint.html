@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Complaint - Employee</title>
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/employeeFileComplaint.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="left">
+      <a href="employee.html"><img src="images/bankLogo.jpg" alt="Bank Logo" /></a>
+      <h1><a href="employee.html">BANK OF VELLORIAN</a></h1>
+    </div>
+    <div class="right">
+      <button id="empLogout">Logout</button>
+    </div>
+  </div>
+  
+  <!-- Sub-navbar -->
+  <div class="sub-navbar">
+    <a href="employee.html">Dashboard</a>
+    <a href="employeeFileComplaint.html">File Complaint</a>
+    <a href="employeeResolveComplaint.html">Resolve Complaints</a>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <h2>File a Complaint</h2>
+    <form id="empComplaintForm">
+      <label for="e_message">Describe your issue:</label>
+      <textarea id="e_message" name="e_message" rows="5" placeholder="Enter your complaint details here..." required></textarea>
+      <button type="submit">Submit Complaint</button>
+    </form>
+    <div id="complaintMessage" class="form-message"></div>
+    <h3>Your Previous Complaints</h3>
+    <div id="complaintsList">
+      <!-- List of employee complaints filed by this employee -->
+    </div>
+  </div>
+  
+  <script>
+    // Logout functionality
+    document.getElementById('empLogout').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', { method: 'POST' });
+        if(response.ok) {
+          window.location.href = 'index.html';
+        } else {
+          console.error('Logout failed:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
+    
+    // Handle complaint form submission
+    document.getElementById('empComplaintForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const e_message = document.getElementById('e_message').value;
+      try {
+        const response = await fetch('/employee/complaint', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ e_message })
+        });
+        const result = await response.text();
+        document.getElementById('complaintMessage').innerText = result;
+        if (response.ok) {
+          loadEmployeeComplaints();
+          document.getElementById('empComplaintForm').reset();
+        }
+      } catch (error) {
+        console.error('Error filing complaint:', error);
+        document.getElementById('complaintMessage').innerText = 'Server error. Please try again later.';
+      }
+    });
+    
+    // Load previously filed complaints by this employee
+    async function loadEmployeeComplaints() {
+      try {
+        const response = await fetch('/employee/complaints');
+        if (response.ok) {
+          const complaints = await response.json();
+          const container = document.getElementById('complaintsList');
+          container.innerHTML = '';
+          complaints.forEach(comp => {
+            const compDiv = document.createElement('div');
+            compDiv.classList.add('complaint-item');
+            // Style based on status
+            compDiv.classList.add(comp.status === 'resolved' ? 'resolved' : 'unresolved');
+            compDiv.innerHTML = `
+              <p><strong>ID:</strong> ${comp.ecomp_id}</p>
+              <p><strong>Complaint:</strong> ${comp.e_message}</p>
+              <p><strong>Status:</strong> ${comp.status}</p>
+              <p><strong>Applied:</strong> ${new Date(comp.applied_timestamp).toLocaleString('en-GB')}</p>
+              ${comp.status === 'resolved' ? `<p><strong>Resolved:</strong> ${new Date(comp.resolved_timestamp).toLocaleString('en-GB')}</p>
+              <p><strong>Resolved by:</strong> ${comp.resolver}</p>
+              <p><strong>Response:</strong> ${comp.a_message}</p>` : ''}
+            `;
+            container.appendChild(compDiv);
+          });
+        } else {
+          console.error('Error fetching complaints:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching complaints:', error);
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadEmployeeComplaints);
+  </script>
+</body>
+</html>

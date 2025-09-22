@@ -1,0 +1,66 @@
+/* sendMoney.css */
+
+/* Style the send money form container */
+.send-money-form {
+    width: 100%;
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style the form headings */
+  .send-money-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+  }
+  
+  /* Style the form labels and inputs */
+  .send-money-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  
+  .send-money-form input[type="text"],
+  .send-money-form input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  /* Style the Send button */
+  .send-money-form button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  
+  .send-money-form button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Style for error and success messages */
+  #sendMoneyError {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  #sendMoneySuccess {
+    color: green;
+    text-align: center;
+    margin-top: 10px;
+  }
+  

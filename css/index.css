@@ -1,0 +1,86 @@
+/* Main content layout for the index page */
+.main-content {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+  }
+  .left-panel,
+  .right-panel {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  .left-panel {
+    flex: 1;
+    max-width: 400px;
+  }
+  .right-panel {
+    flex: 1;
+  }
+  
+  /* Login box styles */
+  .login-box {
+    margin-bottom: 20px;
+  }
+  .login-box h2 {
+    margin-bottom: 15px;
+  }
+  .login-box form input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  .login-box form button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: #007BFF;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .login-box form button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Signup button */
+  .signup-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: #28a745;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  .signup-btn:hover {
+    background-color: #218838;
+  }
+  
+  /* Banking tips box */
+  .tips-box {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Video panel */
+  .video-panel video {
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  /* Responsive design for index page */
+  @media (max-width: 768px) {
+    .main-content {
+      flex-direction: column;
+    }
+  }
+  
