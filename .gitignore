@@ -1,10 +1,10 @@
 # Node.js
 node_modules/
-.env
+*.env
 
 # Python / FastAPI
 __pycache__/
-*.pyc
+*.py[cod]
 venv/
 .venv/
 .pytest_cache/
