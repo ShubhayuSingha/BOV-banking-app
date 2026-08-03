@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Apply for Loan - Bank of Vellorian</title>
   <link rel="stylesheet" href="css/global.css" />
-  <!-- Optional: include common styles from index.css if needed -->
   <link rel="stylesheet" href="css/applyLoan.css" />
 </head>
 <body>
@@ -20,7 +19,7 @@
     </div>
   </div>
   
-  <!-- (Optional) Sub-navbar -->
+  <!-- Sub-navbar -->
   <div class="sub-navbar">
     <a href="account.html">ACCOUNT</a>
     <a href="applyLoan.html">APPLY LOAN</a>
@@ -63,10 +62,10 @@
   
   <script src="js/script.js"></script>
   <script>
-    // Logout functionality for the loan page
+    // Logout functionality - Route namespace modified to /auth[cite: 1]
     document.getElementById('loanLogout').addEventListener('click', async () => {
       try {
-        const response = await fetch('/logout', { method: 'POST' });
+        const response = await fetch('/auth/logout', { method: 'POST' });
         if (response.ok) {
           window.location.href = 'index.html';
         } else {
@@ -77,7 +76,7 @@
       }
     });
     
-    // Handle the loan application form submission
+    // Handle form submission - Route namespace modified to /customer[cite: 1]
     document.getElementById('loanForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const formData = new FormData(this);
@@ -87,7 +86,7 @@
         message: formData.get('message')
       };
       try {
-        const response = await fetch('/applyLoan', {
+        const response = await fetch('/customer/applyLoan', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
@@ -95,7 +94,7 @@
         const result = await response.text();
         document.getElementById('loanFormMessage').innerText = result;
         if(response.ok) {
-          loadLoans(); // Refresh the list of past loans
+          loadLoans(); 
         }
       } catch (error) {
         console.error('Error applying for loan:', error);
@@ -103,25 +102,22 @@
       }
     });
     
-    // Function to load past loans for the logged-in customer
+    // Load past customer loans - Route namespace modified to /customer[cite: 1]
     async function loadLoans() {
       try {
-        const response = await fetch('/loans');
+        const response = await fetch('/customer/loans');
         if(response.ok) {
           const loans = await response.json();
           const container = document.getElementById('loansContainer');
-          container.innerHTML = ''; // Clear any existing content
+          container.innerHTML = ''; 
           loans.forEach(loan => {
-            // Create a div for each loan item
             const loanDiv = document.createElement('div');
             loanDiv.classList.add('loan-item');
-            // Color-code based on status: APPROVED = green, NOT APPROVED = red
             if(loan.status === 'APPROVED') {
               loanDiv.classList.add('approved');
             } else {
               loanDiv.classList.add('not-approved');
             }
-            // Build the loan overview and details including applied & approved timestamps
             loanDiv.innerHTML = `
               <div class="loan-overview">
                 <span class="loan-id">${loan.loan_id}</span>
@@ -137,7 +133,6 @@
                 <p>${loan.message}</p>
               </div>
             `;
-            // Toggle details on button click
             loanDiv.querySelector('.toggleDetails').addEventListener('click', function() {
               const details = loanDiv.querySelector('.loan-details');
               details.style.display = details.style.display === 'none' ? 'block' : 'none';
@@ -152,7 +147,6 @@
       }
     }
     
-    // Load past loans when the page loads
     document.addEventListener('DOMContentLoaded', loadLoans);
   </script>
 </body>

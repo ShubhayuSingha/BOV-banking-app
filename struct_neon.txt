@@ -1,0 +1,256 @@
+[{
+  "table_name": "admins",
+  "column_name": "id",
+  "data_type": "integer",
+  "is_nullable": "NO"
+}, {
+  "table_name": "admins",
+  "column_name": "username",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "admins",
+  "column_name": "password",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "admins",
+  "column_name": "two_factor_secret",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "admins",
+  "column_name": "two_factor_enabled",
+  "data_type": "boolean",
+  "is_nullable": "YES"
+}, {
+  "table_name": "customer_complaints",
+  "column_name": "ccomp_id",
+  "data_type": "integer",
+  "is_nullable": "NO"
+}, {
+  "table_name": "customer_complaints",
+  "column_name": "applier",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "customer_complaints",
+  "column_name": "c_message",
+  "data_type": "text",
+  "is_nullable": "NO"
+}, {
+  "table_name": "customer_complaints",
+  "column_name": "resolver",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "customer_complaints",
+  "column_name": "e_message",
+  "data_type": "text",
+  "is_nullable": "YES"
+}, {
+  "table_name": "customer_complaints",
+  "column_name": "status",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "customer_complaints",
+  "column_name": "applied_timestamp",
+  "data_type": "timestamp with time zone",
+  "is_nullable": "YES"
+}, {
+  "table_name": "customer_complaints",
+  "column_name": "resolved_timestamp",
+  "data_type": "timestamp with time zone",
+  "is_nullable": "YES"
+}, {
+  "table_name": "customers",
+  "column_name": "id",
+  "data_type": "integer",
+  "is_nullable": "NO"
+}, {
+  "table_name": "customers",
+  "column_name": "username",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "customers",
+  "column_name": "password",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "customers",
+  "column_name": "balance",
+  "data_type": "numeric",
+  "is_nullable": "YES"
+}, {
+  "table_name": "customers",
+  "column_name": "two_factor_secret",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "customers",
+  "column_name": "two_factor_enabled",
+  "data_type": "boolean",
+  "is_nullable": "YES"
+}, {
+  "table_name": "employee_complaints",
+  "column_name": "ecomp_id",
+  "data_type": "integer",
+  "is_nullable": "NO"
+}, {
+  "table_name": "employee_complaints",
+  "column_name": "applier",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "employee_complaints",
+  "column_name": "e_message",
+  "data_type": "text",
+  "is_nullable": "NO"
+}, {
+  "table_name": "employee_complaints",
+  "column_name": "resolver",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "employee_complaints",
+  "column_name": "a_message",
+  "data_type": "text",
+  "is_nullable": "YES"
+}, {
+  "table_name": "employee_complaints",
+  "column_name": "status",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "employee_complaints",
+  "column_name": "applied_timestamp",
+  "data_type": "timestamp with time zone",
+  "is_nullable": "YES"
+}, {
+  "table_name": "employee_complaints",
+  "column_name": "resolved_timestamp",
+  "data_type": "timestamp with time zone",
+  "is_nullable": "YES"
+}, {
+  "table_name": "employees",
+  "column_name": "id",
+  "data_type": "integer",
+  "is_nullable": "NO"
+}, {
+  "table_name": "employees",
+  "column_name": "username",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "employees",
+  "column_name": "password",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "employees",
+  "column_name": "two_factor_secret",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "employees",
+  "column_name": "two_factor_enabled",
+  "data_type": "boolean",
+  "is_nullable": "YES"
+}, {
+  "table_name": "loans",
+  "column_name": "loan_id",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "loans",
+  "column_name": "loan_type",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "loans",
+  "column_name": "amount",
+  "data_type": "numeric",
+  "is_nullable": "NO"
+}, {
+  "table_name": "loans",
+  "column_name": "status",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "loans",
+  "column_name": "applier",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "loans",
+  "column_name": "approver",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "loans",
+  "column_name": "message",
+  "data_type": "text",
+  "is_nullable": "YES"
+}, {
+  "table_name": "loans",
+  "column_name": "applied_timestamp",
+  "data_type": "timestamp with time zone",
+  "is_nullable": "YES"
+}, {
+  "table_name": "loans",
+  "column_name": "approval_timestamp",
+  "data_type": "timestamp with time zone",
+  "is_nullable": "YES"
+}, {
+  "table_name": "loans",
+  "column_name": "risk_grade",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "transactions",
+  "column_name": "txn_id",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "transactions",
+  "column_name": "sender",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "transactions",
+  "column_name": "receiver",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "transactions",
+  "column_name": "amount",
+  "data_type": "numeric",
+  "is_nullable": "NO"
+}, {
+  "table_name": "transactions",
+  "column_name": "status",
+  "data_type": "character varying",
+  "is_nullable": "NO"
+}, {
+  "table_name": "transactions",
+  "column_name": "timestamp",
+  "data_type": "timestamp with time zone",
+  "is_nullable": "YES"
+}, {
+  "table_name": "transactions",
+  "column_name": "category",
+  "data_type": "character varying",
+  "is_nullable": "YES"
+}, {
+  "table_name": "transactions",
+  "column_name": "risk_score",
+  "data_type": "integer",
+  "is_nullable": "YES"
+}, {
+  "table_name": "transactions",
+  "column_name": "is_verified_merchant",
+  "data_type": "boolean",
+  "is_nullable": "YES"
+}]

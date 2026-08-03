@@ -1,77 +1,431 @@
-<!DOCTYPE html>
+<!-- admin.html -->
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bank of Vellorian - Admin</title>
-  <link rel="stylesheet" href="css/global.css" />
-  <link rel="stylesheet" href="css/admin.css" />
-</head>
-<body>
-  <!-- Navbar -->
-  <div class="navbar">
-    <div class="left">
-      <a href="admin.html"><img src="images/bankLogo.jpg" alt="Bank Logo" /></a>
-      <h1><a href="admin.html">BANK OF VELLORIAN</a></h1>
-    </div>
-    <div class="right">
-      <button id="adm-logout">Logout</button>
-    </div>
-  </div>
-  
-  <!-- Sub-navbar with link to resolve employee complaints -->
-  <div class="sub-navbar">
-    <a href="admin.html">Dashboard</a>
-    <a href="adminResolveComplaint.html">Resolve Employee Complaints</a>
-  </div>
-  
-  <!-- Main Content: Admin Functions -->
-  <div class="main-content">
-    <div class="admin-functions" style="text-align:center; margin:20px;">
-      <button onclick="window.location.href='adminResolveComplaint.html'">Answer Employee Complaints</button>
-      <br/><br/>
-      <label for="reverseTxnId">Transaction ID to Reverse:</label>
-      <input type="text" id="reverseTxnId" placeholder="e.g., TXN00001" />
-      <button onclick="reverseTransaction()">Reverse Transaction</button>
-    </div>
-    <div id="adminMessage" style="text-align:center; margin-top:20px; font-weight:bold;"></div>
-  </div>
-
-  <script>
-    function answerEmployeeComplaints(){
-      fetch('/admin/answerComplaint', { method: 'POST' })
-        .then(res => res.text())
-        .then(msg => document.getElementById('adminMessage').innerText = msg)
-        .catch(err => console.error(err));
-    }
-    function reverseTransaction(){
-      const txnId = document.getElementById('reverseTxnId').value.trim();
-      if(!txnId){
-        alert('Please enter a transaction ID.');
-        return;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bank of Vellorian - Admin</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+    <!-- Chart.js CDN for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Analytics Dashboard Layout for Admin */
+      .analytics-section {
+        display: flex;
+        gap: 20px;
+        margin: 30px 40px;
+        justify-content: center;
       }
-      fetch('/admin/reverseTransaction', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ txn_id: txnId })
-      })
-      .then(res => res.text())
-      .then(msg => document.getElementById('adminMessage').innerText = msg)
-      .catch(err => console.error(err));
-    }
-  
-    document.getElementById('adm-logout').addEventListener('click', async () => {
-      try {
-        const response = await fetch('/logout', { method: 'POST' });
-        if(response.ok) {
-          window.location.href = 'index.html';
-        } else {
-          console.error('Logout failed:', response.statusText);
+      .analytics-card {
+        flex: 1;
+        max-width: 500px;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+      .analytics-card h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #333;
+        font-size: 1.1rem;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+        text-align: center;
+      }
+      @media (max-width: 768px) {
+        .analytics-section {
+          flex-direction: column;
+          margin: 20px;
+          align-items: center;
         }
-      } catch(err) {
-        console.error(err);
+        .analytics-card {
+          width: 100%;
+        }
       }
-    });
-  </script>
-</body>
+
+      /* 2FA Sub-navbar Button & Modal Styles */
+      .btn-2fa {
+        background-color: #2196f3;
+        color: #ffffff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 0.85rem;
+        margin-left: 10px;
+        transition: background-color 0.2s ease;
+      }
+      .btn-2fa:hover {
+        background-color: #1976d2;
+      }
+
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 8px;
+        width: 350px;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        position: relative;
+      }
+      .modal-content h3 {
+        margin-top: 0;
+        color: #1a237e;
+      }
+      .modal-content img {
+        width: 180px;
+        height: 180px;
+        margin: 15px 0;
+      }
+      .modal-content input[type="text"] {
+        width: 80%;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .modal-content button.confirm-btn {
+        background-color: #2e7d32;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 85%;
+        margin-top: 5px;
+      }
+      .modal-content button.confirm-btn:hover {
+        background-color: #1b5e20;
+      }
+      .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <div class="navbar">
+      <div class="left">
+        <a href="admin.html"
+          ><img src="images/bankLogo.jpg" alt="Bank Logo"
+        /></a>
+        <h1><a href="admin.html">BANK OF VELLORIAN</a></h1>
+      </div>
+      <div class="right">
+        <button id="adm-logout">Logout</button>
+      </div>
+    </div>
+
+    <!-- Sub-navbar -->
+    <div class="sub-navbar">
+      <a href="admin.html">Dashboard</a>
+      <a href="adminResolveComplaint.html">Resolve Employee Complaints</a>
+      <button class="btn-2fa" id="setup2faBtn" onclick="open2FAModal()">
+        ENABLE 2FA
+      </button>
+    </div>
+
+    <!-- 2FA Setup Modal Popup -->
+    <div class="modal-overlay" id="twoFactorModal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="close2FAModal()">&times;</span>
+        <h3>Admin 2FA Setup</h3>
+        <p style="font-size: 0.9rem; color: #555">
+          Scan this QR code with Google Authenticator or Microsoft
+          Authenticator:
+        </p>
+        <img id="qrCodeImg" src="" alt="2FA QR Code Setup" />
+        <p style="font-size: 0.8rem; color: #777">
+          Secret Key: <b id="manualSecretKey"></b>
+        </p>
+
+        <input
+          type="text"
+          id="setupTokenInput"
+          placeholder="6-Digit Code"
+          maxlength="6"
+        />
+        <br />
+        <button class="confirm-btn" onclick="confirm2FASetup()">
+          Verify & Enable
+        </button>
+        <div
+          id="modalError"
+          style="color: red; margin-top: 10px; font-size: 0.85rem"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Main Content: Admin Functions -->
+    <div class="main-content">
+      <div class="admin-functions" style="text-align: center; margin: 20px">
+        <button onclick="window.location.href = 'adminResolveComplaint.html'">
+          Answer Employee Complaints
+        </button>
+        <br /><br />
+        <label for="reverseTxnId">Transaction ID to Reverse:</label>
+        <input
+          type="text"
+          id="reverseTxnId"
+          placeholder="e.g., TXN-8F2B1C9E4A"
+        />
+        <button onclick="reverseTransaction()">Reverse Transaction</button>
+      </div>
+
+      <!-- Analytics Dashboard Section -->
+      <div class="analytics-section">
+        <div class="analytics-card">
+          <h3>System Risk Score Distribution</h3>
+          <canvas id="riskDistributionChart"></canvas>
+        </div>
+        <div class="analytics-card">
+          <h3>Transaction Volume by Risk Tier</h3>
+          <canvas id="riskVolumeChart"></canvas>
+        </div>
+      </div>
+
+      <div
+        id="adminMessage"
+        style="text-align: center; margin-top: 20px; font-weight: bold"
+      ></div>
+    </div>
+
+    <script>
+      // Answer Employee Complaints execution
+      function answerEmployeeComplaints() {
+        fetch("/admin/answerComplaint", { method: "POST" })
+          .then((res) => res.text())
+          .then(
+            (msg) => (document.getElementById("adminMessage").innerText = msg),
+          )
+          .catch((err) => console.error(err));
+      }
+
+      // Reverse logic execution
+      function reverseTransaction() {
+        const txnId = document.getElementById("reverseTxnId").value.trim();
+        if (!txnId) {
+          alert("Please enter a transaction ID.");
+          return;
+        }
+        fetch("/admin/reverseTransaction", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ txn_id: txnId }),
+        })
+          .then((res) => res.text())
+          .then(
+            (msg) => (document.getElementById("adminMessage").innerText = msg),
+          )
+          .catch((err) => console.error(err));
+      }
+
+      // Admin Session Destructor
+      document
+        .getElementById("adm-logout")
+        .addEventListener("click", async () => {
+          try {
+            const response = await fetch("/auth/logout", { method: "POST" });
+            if (response.ok) {
+              window.location.href = "index.html";
+            } else {
+              console.error("Logout failed:", response.statusText);
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        });
+
+      // 2FA Modal Handlers
+      async function open2FAModal() {
+        const errDiv = document.getElementById("modalError");
+        errDiv.innerText = "";
+        try {
+          const res = await fetch("/auth/2fa/setup");
+          if (res.ok) {
+            const data = await res.json();
+            document.getElementById("qrCodeImg").src = data.qrCodeUrl;
+            document.getElementById("manualSecretKey").innerText = data.secret;
+            document.getElementById("twoFactorModal").style.display = "flex";
+          } else {
+            alert(await res.text());
+          }
+        } catch (err) {
+          console.error("Error contacting server:", err);
+          alert("Server error. Could not initiate 2FA setup.");
+        }
+      }
+
+      function close2FAModal() {
+        document.getElementById("twoFactorModal").style.display = "none";
+      }
+
+      async function confirm2FASetup() {
+        const token = document.getElementById("setupTokenInput").value.trim();
+        const errDiv = document.getElementById("modalError");
+        errDiv.innerText = "";
+
+        if (!token || token.length !== 6) {
+          errDiv.innerText = "Please enter a valid 6-digit code.";
+          return;
+        }
+
+        try {
+          const res = await fetch("/auth/2fa/enable", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+
+          if (res.ok) {
+            alert("Two-Factor Authentication successfully enabled!");
+            close2FAModal();
+            location.reload();
+          } else {
+            const errText = await res.text();
+            errDiv.innerText = errText;
+          }
+        } catch (err) {
+          console.error("Error verifying 2FA:", err);
+          errDiv.innerText = "Error verifying token. Try again.";
+        }
+      }
+    </script>
+
+    <!-- Admin Analytics Fetcher & Chart Renderer -->
+    <script>
+      async function loadAdminAnalytics() {
+        try {
+          const res = await fetch("/api/analytics/admin/risk-distribution", {
+            credentials: "include",
+          });
+          if (res.ok) {
+            const riskData = await res.json();
+            renderRiskDistributionChart(riskData);
+            renderRiskVolumeChart(riskData);
+          } else {
+            console.error("Failed to load admin analytics:", res.statusText);
+          }
+        } catch (err) {
+          console.error("Admin Analytics Error:", err);
+        }
+      }
+
+      function renderRiskDistributionChart(data) {
+        const ctx = document
+          .getElementById("riskDistributionChart")
+          .getContext("2d");
+
+        const labels = data.map((row) => row.risk_tier);
+        const counts = data.map((row) => parseInt(row.total_transactions, 10));
+
+        const colorMap = {
+          "Low Risk (0-49)": "#2e7d32",
+          "Medium Risk (50-74)": "#f57c00",
+          "High Risk (75-100)": "#c62828",
+        };
+
+        const bgColors = labels.map((tier) => colorMap[tier] || "#757575");
+
+        new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                data: counts,
+                backgroundColor: bgColors,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "bottom" },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const row = data[context.dataIndex];
+                    return `${row.risk_tier}: ${row.total_transactions} txns`;
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      function renderRiskVolumeChart(data) {
+        const ctx = document.getElementById("riskVolumeChart").getContext("2d");
+
+        const labels = data.map((row) => row.risk_tier);
+        const volumes = data.map((row) => parseFloat(row.total_volume));
+
+        const colorMap = {
+          "Low Risk (0-49)": "#2e7d32",
+          "Medium Risk (50-74)": "#f57c00",
+          "High Risk (75-100)": "#c62828",
+        };
+
+        const bgColors = labels.map((tier) => colorMap[tier] || "#757575");
+
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Total Volume (₹)",
+                data: volumes,
+                backgroundColor: bgColors,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (value) {
+                    return "₹" + new Intl.NumberFormat("en-IN").format(value);
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", loadAdminAnalytics);
+    </script>
+  </body>
 </html>

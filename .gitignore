@@ -1,8 +1,10 @@
-# Dependencies
-/node_modules
-
-# Environment variables
+# Node.js
+node_modules/
 .env
 
-# Logs
-npm-debug.log*
+# Python / FastAPI
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/

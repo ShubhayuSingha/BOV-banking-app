@@ -1,135 +1,148 @@
 <!-- employeeResolveComplaint.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resolve Customer Complaints - Bank of Vellorian</title>
-  <link rel="stylesheet" href="css/global.css" />
-  <link rel="stylesheet" href="css/employeeResolveComplaint.css" />
-</head>
-<body>
-  <!-- Navbar -->
-  <div class="navbar">
-    <div class="left">
-      <a href="employee.html"><img src="images/bankLogo.jpg" alt="Bank Logo" /></a>
-      <h1><a href="employee.html">BANK OF VELLORIAN</a></h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resolve Customer Complaints - Bank of Vellorian</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/employeeResolveComplaint.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <div class="navbar">
+      <div class="left">
+        <a href="employee.html"
+          ><img src="images/bankLogo.jpg" alt="Bank Logo"
+        /></a>
+        <h1><a href="employee.html">BANK OF VELLORIAN</a></h1>
+      </div>
+      <div class="right">
+        <button id="empLogout">Logout</button>
+      </div>
     </div>
-    <div class="right">
-      <button id="empLogout">Logout</button>
+
+    <!-- Sub-navbar -->
+    <div id="employeeSubNavbar"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <h2>Customer Complaints</h2>
+      <div id="complaintsContainer">
+        <!-- All complaints (resolved and unresolved) will be dynamically loaded here -->
+      </div>
     </div>
-  </div>
-  
-  <!-- Sub-navbar -->
-  <div class="sub-navbar">
-    <a href="employee.html">Dashboard</a>
-    <a href="employeeLoans.html">Loan Approvals</a>
-    <a href="employeeTransactions.html">Approve Transactions &gt; 50,000</a>
-    <a href="employeeResolveComplaint.html">Resolve Complaints</a>
-  </div>
-  
-  <!-- Main Content -->
-  <div class="main-content">
-    <h2>Customer Complaints</h2>
-    <div id="complaintsContainer">
-      <!-- All complaints (resolved and unresolved) will be dynamically loaded here -->
-    </div>
-  </div>
-  
-  <script src="js/script.js"></script>
-  <script>
-    // Logout functionality
-    document.getElementById('empLogout').addEventListener('click', async () => {
-      try {
-        const response = await fetch('/logout', { method: 'POST' });
-        if(response.ok) {
-          window.location.href = 'index.html';
-        } else {
-          console.error('Logout failed:', response.statusText);
-        }
-      } catch(err) {
-        console.error(err);
-      }
-    });
-    
-    async function loadComplaints() {
-      try {
-        // Fetch all customer complaints (both resolved and unresolved)
-        const response = await fetch('/employee/customerComplaints');
-        if(response.ok) {
-          const complaints = await response.json();
-          const container = document.getElementById('complaintsContainer');
-          container.innerHTML = '';
-          complaints.forEach(comp => {
-            const compDiv = document.createElement('div');
-            compDiv.classList.add('complaint-item');
-            // Apply class based on status: unresolved (red) and resolved (green)
-            if (comp.status === 'resolved') {
-              compDiv.classList.add('resolved');
+
+    <script src="js/script.js"></script>
+    <script>
+      // Logout functionality - Route namespace modified to /auth[cite: 1]
+      document
+        .getElementById("empLogout")
+        .addEventListener("click", async () => {
+          try {
+            const response = await fetch("/auth/logout", { method: "POST" });
+            if (response.ok) {
+              window.location.href = "index.html";
             } else {
-              compDiv.classList.add('unresolved');
+              console.error("Logout failed:", response.statusText);
             }
-            compDiv.innerHTML = `
+          } catch (err) {
+            console.error(err);
+          }
+        });
+
+      // Fetch tickets ledger - Route namespace verified as /employee[cite: 1]
+      async function loadComplaints() {
+        try {
+          const response = await fetch("/employee/customerComplaints");
+          if (response.ok) {
+            const complaints = await response.json();
+            const container = document.getElementById("complaintsContainer");
+            container.innerHTML = "";
+            complaints.forEach((comp) => {
+              const compDiv = document.createElement("div");
+              compDiv.classList.add("complaint-item");
+              if (comp.status === "resolved") {
+                compDiv.classList.add("resolved");
+              } else {
+                compDiv.classList.add("unresolved");
+              }
+              compDiv.innerHTML = `
               <div class="complaint-overview">
                 <span class="comp-id">${comp.ccomp_id}</span>
                 <span class="comp-applier">From: ${comp.applier}</span>
-                <span class="comp-applied">Applied: ${new Date(comp.applied_timestamp).toLocaleDateString('en-GB')} ${new Date(comp.applied_timestamp).toLocaleTimeString()}</span>
+                <span class="comp-applied">Applied: ${new Date(comp.applied_timestamp).toLocaleDateString("en-GB")} ${new Date(comp.applied_timestamp).toLocaleTimeString()}</span>
                 <button class="toggleDetails">Details</button>
               </div>
               <div class="complaint-details" style="display: none;">
                 <p><strong>Complaint:</strong> ${comp.c_message}</p>
-                ${comp.status === 'resolved' ? `
-                  <p><strong>Resolved:</strong> ${new Date(comp.resolved_timestamp).toLocaleDateString('en-GB')} ${new Date(comp.resolved_timestamp).toLocaleTimeString()}</p>
+                ${
+                  comp.status === "resolved"
+                    ? `
+                  <p><strong>Resolved:</strong> ${new Date(comp.resolved_timestamp).toLocaleDateString("en-GB")} ${new Date(comp.resolved_timestamp).toLocaleTimeString()}</p>
                   <p><strong>Resolved by:</strong> ${comp.resolver}</p>
                   <p><strong>Response:</strong> ${comp.e_message}</p>
-                ` : `
+                `
+                    : `
                   <textarea placeholder="Enter resolution message..." class="resolutionMessage"></textarea>
                   <button class="resolveBtn" data-compid="${comp.ccomp_id}">Resolve</button>
-                `}
+                `
+                }
               </div>
             `;
-            // Toggle details display
-            compDiv.querySelector('.toggleDetails').addEventListener('click', function() {
-              const details = compDiv.querySelector('.complaint-details');
-              details.style.display = details.style.display === 'none' ? 'block' : 'none';
-            });
-            // If unresolved, attach event listener to resolve button
-            const resolveBtn = compDiv.querySelector('.resolveBtn');
-            if (resolveBtn) {
-              resolveBtn.addEventListener('click', async function() {
-                const compId = this.getAttribute('data-compid');
-                const resolutionMsg = compDiv.querySelector('.resolutionMessage').value;
-                if (!resolutionMsg.trim()) {
-                  alert('Please enter a resolution message.');
-                  return;
-                }
-                try {
-                  const response = await fetch('/employee/resolveComplaint', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ccomp_id: compId, e_message: resolutionMsg })
-                  });
-                  if (response.ok) {
-                    loadComplaints();
-                  } else {
-                    console.error('Resolution failed:', await response.text());
+
+              compDiv
+                .querySelector(".toggleDetails")
+                .addEventListener("click", function () {
+                  const details = compDiv.querySelector(".complaint-details");
+                  details.style.display =
+                    details.style.display === "none" ? "block" : "none";
+                });
+
+              // Resolve button handler - Route namespace verified as /employee[cite: 1]
+              const resolveBtn = compDiv.querySelector(".resolveBtn");
+              if (resolveBtn) {
+                resolveBtn.addEventListener("click", async function () {
+                  const compId = this.getAttribute("data-compid");
+                  const resolutionMsg =
+                    compDiv.querySelector(".resolutionMessage").value;
+                  if (!resolutionMsg.trim()) {
+                    alert("Please enter a resolution message.");
+                    return;
                   }
-                } catch (error) {
-                  console.error('Error resolving complaint:', error);
-                }
-              });
-            }
-            container.appendChild(compDiv);
-          });
-        } else {
-          console.error('Error fetching complaints:', response.statusText);
+                  try {
+                    const response = await fetch("/employee/resolveComplaint", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        ccomp_id: compId,
+                        e_message: resolutionMsg,
+                      }),
+                    });
+                    if (response.ok) {
+                      loadComplaints();
+                    } else {
+                      console.error(
+                        "Resolution failed:",
+                        await response.text(),
+                      );
+                    }
+                  } catch (error) {
+                    console.error("Error resolving complaint:", error);
+                  }
+                });
+              }
+              container.appendChild(compDiv);
+            });
+          } else {
+            console.error("Error fetching complaints:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching complaints:", error);
         }
-      } catch (error) {
-        console.error('Error fetching complaints:', error);
       }
-    }
-    
-    document.addEventListener('DOMContentLoaded', loadComplaints);
-  </script>
-</body>
+
+      document.addEventListener("DOMContentLoaded", loadComplaints);
+    </script>
+  </body>
 </html>

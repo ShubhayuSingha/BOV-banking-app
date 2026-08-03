@@ -1,156 +1,566 @@
 <!-- account.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bank of Vellorian - Account</title>
-  <!-- Global and page-specific styles -->
-  <link rel="stylesheet" href="css/global.css" />
-  <link rel="stylesheet" href="css/account.css" />
-</head>
-<body>
-  <!-- Navbar and Sub-navbar -->
-  <div class="navbar">
-    <div class="left">
-      <a href="account.html"><img src="images/bankLogo.jpg" alt="Bank Logo" /></a>
-      <h1><a href="account.html">BANK OF VELLORIAN</a></h1>
-    </div>
-    <div class="right">
-      <button id="nav-logout">Logout</button>
-    </div>
-  </div>
-  <div class="sub-navbar">
-    <a href="account.html">ACCOUNT</a>
-    <a href="applyLoan.html">LOANS</a>
-    <a href="sendMoney.html">MONEY-TRANSFER</a>
-    <a href="fileComplaint.html">COMPLAINTS</a>    
-    <div class="dropdown">
-      <button class="dropbtn">▼</button>
-      <div class="dropdown-content">
-        <a href="#">PENSIONS</a>
-        <a href="#">OFFERS</a>
-        <a href="#">SUPPORT</a>
-        <a href="#">ATM</a>
-        <a href="#">NRI</a>
-        <a href="#">EMI</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Account Options Buttons -->
-  <div class="account-options">
-    <!-- <button>View Account Details</button> -->
-    <button onclick="window.location.href='sendMoney.html'">Send Money</button>
-    <button onclick="window.location.href='applyLoan.html'">Apply for Loan</button>
-    <!-- <button onclick="window.location.href='allTransactions.html'">View All Transactions</button> -->
-    <button onclick="window.location.href='fileComplaint.html'">File Complaint</button>
-  </div>
-
-  <!-- Account Information Windows -->
-  <div class="account-windows">
-    <!-- Left Window: Balance and options -->
-    <div class="window left-window">
-      <div class="balance-container">
-        <h2>BALANCE</h2>
-        <button class="balance-display">Loading...</button>
-      </div>
-      <div class="account-options-list">
-        <a href="#">Never Share OTP</a>
-        <a href="#">Build Good Financial Habits</a>
-        <a href="#">Don't Hesitate to Complain</a>
-      </div>
-    </div>    
-    <!-- Right Window: Recent Transactions -->
-    <div class="window right-window">
-      <h2>Recent Transactions</h2>
-      <div class="transactions-container">
-        <!-- Transaction boxes will be loaded dynamically here -->
-      </div>
-      <div class="view-more-container">
-        <button class="view-more-btn">View More</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="js/script.js"></script>
-  <script>
-    // When the account page loads, fetch the balance from the backend
-    document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const response = await fetch('/balance');
-        if (response.ok) {
-          const data = await response.json();
-          // Format the balance in Indian style (e.g., 12,34,567)
-          const formattedBalance = new Intl.NumberFormat('en-IN').format(data.balance);
-          // Update the balance display button with the fetched and formatted balance
-          document.querySelector('.balance-display').textContent = '₹ ' + formattedBalance;
-        } else {
-          console.error('Could not fetch balance:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching balance:', error);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bank of Vellorian - Account</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/account.css" />
+    <!-- Chart.js CDN for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Quick inline styles for Analytics Layout */
+      .analytics-section {
+        display: flex;
+        gap: 20px;
+        margin: 20px 40px;
       }
-    });
-
-    // Handle Logout: send request to backend and then redirect to index.html
-    document.getElementById('nav-logout').addEventListener('click', async () => {
-      try {
-        const response = await fetch('/logout', { method: 'POST' });
-        if (response.ok) {
-          window.location.href = 'index.html';
-        } else {
-          console.error('Logout failed:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error during logout:', error);
+      .analytics-card {
+        flex: 1;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
       }
-    });
-  </script>
-  <script>
-    async function loadTransactions() {
-  try {
-    const response = await fetch('/transactions', { credentials: 'include' });
-    if (response.ok) {
-      const transactions = await response.json();
-      const container = document.querySelector('.transactions-container');
-      container.innerHTML = ""; // Clear previous content
+      .analytics-card h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #333;
+        font-size: 1.1rem;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+      }
+      @media (max-width: 768px) {
+        .analytics-section {
+          flex-direction: column;
+          margin: 20px;
+        }
+      }
 
-      transactions.forEach(txn => {
-        const txnDiv = document.createElement("div");
-        txnDiv.classList.add("transaction-box");
+      /* 2FA Modal & Sub-navbar Button Styles */
+      .btn-2fa {
+        background-color: #2196f3;
+        color: #ffffff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 0.85rem;
+        margin-left: 10px;
+        transition: background-color 0.2s ease;
+      }
+      .btn-2fa:hover {
+        opacity: 0.9;
+      }
 
-        // Add the appropriate class:
-        if (txn.status === 'PENDING') {
-          txnDiv.classList.add('pending');
-        } else if (txn.status === 'REJECTED') {
-          txnDiv.classList.add('rejected');
-        } else {
-          // For sender: Debit, for receiver: Credit, or Reversed if applicable.
-          txnDiv.classList.add(txn.type.toLowerCase());
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 8px;
+        width: 350px;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        position: relative;
+      }
+      .modal-content h3 {
+        margin-top: 0;
+        color: #1a237e;
+      }
+      .modal-content img {
+        width: 180px;
+        height: 180px;
+        margin: 15px 0;
+      }
+      .modal-content input[type="text"] {
+        width: 80%;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .modal-content button.confirm-btn {
+        background-color: #2e7d32;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 85%;
+        margin-top: 5px;
+      }
+      .modal-content button.confirm-btn:hover {
+        background-color: #1b5e20;
+      }
+      .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar and Sub-navbar -->
+    <div class="navbar">
+      <div class="left">
+        <a href="account.html"
+          ><img src="images/bankLogo.jpg" alt="Bank Logo"
+        /></a>
+        <h1><a href="account.html">BANK OF VELLORIAN</a></h1>
+      </div>
+      <div class="right">
+        <button id="nav-logout">Logout</button>
+      </div>
+    </div>
+    <div class="sub-navbar">
+      <a href="account.html">ACCOUNT</a>
+      <a href="applyLoan.html">LOANS</a>
+      <a href="sendMoney.html">MONEY-TRANSFER</a>
+      <a href="fileComplaint.html">COMPLAINTS</a>
+      <button class="btn-2fa" id="setup2faBtn" onclick="handle2FAButtonClick()">
+        Loading 2FA...
+      </button>
+      <div class="dropdown">
+        <button class="dropbtn">▼</button>
+        <div class="dropdown-content">
+          <a href="#">PENSIONS</a>
+          <a href="#">OFFERS</a>
+          <a href="#">SUPPORT</a>
+          <a href="#">ATM</a>
+          <a href="#">NRI</a>
+          <a href="#">EMI</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2FA Setup Modal Popup -->
+    <div class="modal-overlay" id="twoFactorModal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="close2FAModal()">&times;</span>
+        <h3>Google Authenticator 2FA</h3>
+        <p style="font-size: 0.9rem; color: #555">
+          Scan this QR code with Google Authenticator or Microsoft
+          Authenticator:
+        </p>
+        <img id="qrCodeImg" src="" alt="2FA QR Code Setup" />
+        <p style="font-size: 0.8rem; color: #777">
+          Secret Key: <b id="manualSecretKey"></b>
+        </p>
+
+        <input
+          type="text"
+          id="setupTokenInput"
+          placeholder="6-Digit Code"
+          maxlength="6"
+        />
+        <br />
+        <button class="confirm-btn" onclick="confirm2FASetup()">
+          Verify & Enable
+        </button>
+        <div
+          id="modalError"
+          style="color: red; margin-top: 10px; font-size: 0.85rem"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Customer Greeting Section -->
+    <div
+      class="user-greeting"
+      style="
+        margin: 20px 40px 10px 40px;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #1a237e;
+      "
+    >
+      Welcome, <span id="customerName">...</span>
+    </div>
+
+    <!-- Account Options Buttons -->
+    <div class="account-options">
+      <button onclick="window.location.href = 'sendMoney.html'">
+        Send Money
+      </button>
+      <button onclick="window.location.href = 'applyLoan.html'">
+        Apply for Loan
+      </button>
+      <button onclick="window.location.href = 'fileComplaint.html'">
+        File Complaint
+      </button>
+    </div>
+
+    <!-- Analytics Dashboard Section -->
+    <div class="analytics-section">
+      <div class="analytics-card">
+        <h3>Monthly Cashflow</h3>
+        <canvas id="cashflowChart"></canvas>
+      </div>
+      <div class="analytics-card">
+        <h3>Spending by Category</h3>
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Account Information Windows -->
+    <div class="account-windows">
+      <!-- Left Window: Balance and options -->
+      <div class="window left-window">
+        <div class="balance-container">
+          <h2>BALANCE</h2>
+          <button class="balance-display">Loading...</button>
+        </div>
+        <div class="account-options-list">
+          <a href="#">Never Share OTP</a>
+          <a href="#">Build Good Financial Habits</a>
+          <a href="#">Don't Hesitate to Complain</a>
+        </div>
+      </div>
+
+      <!-- Right Window: Recent Transactions -->
+      <div class="window right-window">
+        <h2>Recent Transactions</h2>
+        <div class="transactions-container">
+          <!-- Transaction boxes dynamically injected here -->
+        </div>
+        <div class="view-more-container">
+          <button class="view-more-btn" id="load-more-btn">View More</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/script.js"></script>
+
+    <!-- Account Balance, Profile Name, 2FA Setup/Toggle & Logout Handler -->
+    <script>
+      let is2FAActive = false;
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Fetch Customer Balance
+        try {
+          const response = await fetch("/customer/balance");
+          if (response.ok) {
+            const data = await response.json();
+            const formattedBalance = new Intl.NumberFormat("en-IN").format(
+              data.balance,
+            );
+            document.querySelector(".balance-display").textContent =
+              "₹ " + formattedBalance;
+          } else {
+            console.error("Could not fetch balance:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching balance:", error);
         }
 
-        txnDiv.innerHTML = `
-          <span class="trans-txnid">${txn.txn_id}</span>
-          <span class="trans-name">${txn.name}</span>
-          <span class="trans-datetime">${txn.dateTime}</span>
-          <span class="trans-type">${txn.status === 'PENDING' ? 'Pending Approval' : (txn.status === 'REJECTED' ? 'Rejected' : txn.type)}</span>
-          <span class="trans-amount">₹${new Intl.NumberFormat('en-IN').format(txn.amount)}</span>
-        `;
-        container.appendChild(txnDiv);
+        // Fetch Customer Profile Name and 2FA Status directly from /customer/me
+        try {
+          const profileRes = await fetch("/customer/me");
+          if (profileRes.ok) {
+            const profileData = await profileRes.json();
+            document.getElementById("customerName").textContent =
+              profileData.username;
+
+            is2FAActive = Boolean(profileData.twoFactorEnabled);
+            update2FAButtonUI();
+          } else {
+            console.error(
+              "Could not fetch user profile:",
+              profileRes.statusText,
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching profile details:", error);
+        }
       });
-    } else {
-      console.error("Error fetching transactions:", response.statusText);
-    }
-  } catch (error) {
-    console.error("Error fetching transactions:", error);
-  }
-}
 
-    
-    // Load transactions on page load
-    document.addEventListener("DOMContentLoaded", loadTransactions);
-  </script>
-  
-</body>
+      // Dynamic UI state for the sub-navbar button
+      function update2FAButtonUI() {
+        const btn = document.getElementById("setup2faBtn");
+        if (is2FAActive) {
+          btn.innerText = "DISABLE 2FA";
+          btn.style.backgroundColor = "#d32f2f"; // Red button when 2FA is active
+        } else {
+          btn.innerText = "ENABLE 2FA";
+          btn.style.backgroundColor = "#2196f3"; // Blue button when 2FA is disabled
+        }
+      }
+
+      // Handle sub-navbar button click
+      async function handle2FAButtonClick() {
+        if (is2FAActive) {
+          const token = prompt(
+            "Enter the 6-digit code from your Google Authenticator app to disable 2FA:",
+          );
+          if (!token) return;
+
+          try {
+            const res = await fetch("/auth/2fa/disable", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token: token.trim() }),
+            });
+
+            if (res.ok) {
+              alert("2FA has been disabled successfully.");
+              is2FAActive = false;
+              update2FAButtonUI();
+            } else {
+              alert(await res.text());
+            }
+          } catch (err) {
+            console.error("Error disabling 2FA:", err);
+            alert("Failed to disable 2FA.");
+          }
+        } else {
+          open2FAModal();
+        }
+      }
+
+      document
+        .getElementById("nav-logout")
+        .addEventListener("click", async () => {
+          try {
+            const response = await fetch("/auth/logout", { method: "POST" });
+            if (response.ok) {
+              window.location.href = "index.html";
+            } else {
+              console.error("Logout failed:", response.statusText);
+            }
+          } catch (error) {
+            console.error("Error during logout:", error);
+          }
+        });
+
+      // 2FA Modal Handlers
+      async function open2FAModal() {
+        const errDiv = document.getElementById("modalError");
+        errDiv.innerText = "";
+        try {
+          const res = await fetch("/auth/2fa/setup");
+          if (res.ok) {
+            const data = await res.json();
+            document.getElementById("qrCodeImg").src = data.qrCodeUrl;
+            document.getElementById("manualSecretKey").innerText = data.secret;
+            document.getElementById("twoFactorModal").style.display = "flex";
+          } else {
+            alert(await res.text());
+          }
+        } catch (err) {
+          console.error("Error contacting server:", err);
+          alert("Server error. Could not initiate 2FA setup.");
+        }
+      }
+
+      function close2FAModal() {
+        document.getElementById("twoFactorModal").style.display = "none";
+      }
+
+      async function confirm2FASetup() {
+        const token = document.getElementById("setupTokenInput").value.trim();
+        const errDiv = document.getElementById("modalError");
+        errDiv.innerText = "";
+
+        if (!token || token.length !== 6) {
+          errDiv.innerText = "Please enter a valid 6-digit code.";
+          return;
+        }
+
+        try {
+          const res = await fetch("/auth/2fa/enable", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+
+          if (res.ok) {
+            alert("Two-Factor Authentication successfully enabled!");
+            close2FAModal();
+            is2FAActive = true;
+            update2FAButtonUI();
+          } else {
+            const errText = await res.text();
+            errDiv.innerText = errText;
+          }
+        } catch (err) {
+          console.error("Error verifying 2FA:", err);
+          errDiv.innerText = "Error verifying token. Try again.";
+        }
+      }
+    </script>
+
+    <!-- Transactions Pagination Handler -->
+    <script>
+      let allTransactions = [];
+      let visibleCount = 10;
+
+      function renderTransactions() {
+        const container = document.querySelector(".transactions-container");
+        const loadMoreBtn = document.getElementById("load-more-btn");
+        container.innerHTML = "";
+
+        const slice = allTransactions.slice(0, visibleCount);
+
+        slice.forEach((txn) => {
+          const txnDiv = document.createElement("div");
+          txnDiv.classList.add("transaction-box");
+
+          if (txn.status === "PENDING" || txn.status === "PENDING_REVIEW") {
+            txnDiv.classList.add("pending");
+          } else if (txn.status === "REJECTED") {
+            txnDiv.classList.add("rejected");
+          } else {
+            txnDiv.classList.add((txn.type || "debit").toLowerCase());
+          }
+
+          txnDiv.innerHTML = `
+            <span class="trans-txnid">${txn.txn_id || ""}</span>
+            <span class="trans-name">${txn.name || txn.receiver || ""}</span>
+            <span class="trans-datetime">${txn.dateTime || new Date(txn.timestamp).toLocaleString()}</span>
+            <span class="trans-type">${txn.status === "PENDING" || txn.status === "PENDING_REVIEW" ? "Pending Approval" : txn.status === "REJECTED" ? "Rejected" : txn.type || "DEBIT"}</span>
+            <span class="trans-amount">₹${new Intl.NumberFormat("en-IN").format(txn.amount)}</span>
+          `;
+          container.appendChild(txnDiv);
+        });
+
+        // Hide "View More" button if all transactions are displayed
+        if (visibleCount >= allTransactions.length) {
+          loadMoreBtn.style.display = "none";
+        } else {
+          loadMoreBtn.style.display = "inline-block";
+        }
+      }
+
+      async function loadTransactions() {
+        try {
+          const response = await fetch("/customer/transactions", {
+            credentials: "include",
+          });
+          if (response.ok) {
+            allTransactions = await response.json();
+            renderTransactions();
+          } else {
+            console.error("Error fetching transactions:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching transactions:", error);
+        }
+      }
+
+      document.getElementById("load-more-btn").addEventListener("click", () => {
+        visibleCount += 10;
+        renderTransactions();
+      });
+
+      document.addEventListener("DOMContentLoaded", loadTransactions);
+    </script>
+
+    <!-- Chart.js Analytics Fetcher & Renderer -->
+    <script>
+      async function loadCustomerAnalytics() {
+        try {
+          const cashflowRes = await fetch("/api/analytics/customer/cashflow");
+          if (cashflowRes.ok) {
+            const cashflowData = await cashflowRes.json();
+            renderCashflowChart(cashflowData);
+          }
+
+          const categoryRes = await fetch("/api/analytics/customer/categories");
+          if (categoryRes.ok) {
+            const categoryData = await categoryRes.json();
+            renderCategoryChart(categoryData);
+          }
+        } catch (error) {
+          console.error("Analytics Load Error:", error);
+        }
+      }
+
+      function renderCashflowChart(data) {
+        const ctx = document.getElementById("cashflowChart").getContext("2d");
+        const labels = data.map((row) => {
+          const d = new Date(row.month);
+          return d.toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          });
+        });
+
+        const income = data.map((row) => parseFloat(row.total_income));
+        const expense = data.map((row) => parseFloat(row.total_expense));
+
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              { label: "Income (₹)", data: income, backgroundColor: "#2e7d32" },
+              {
+                label: "Expense (₹)",
+                data: expense,
+                backgroundColor: "#c62828",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: "top" } },
+          },
+        });
+      }
+
+      function renderCategoryChart(data) {
+        const ctx = document.getElementById("categoryChart").getContext("2d");
+        const labels = data.map((row) => row.category);
+        const amounts = data.map((row) => parseFloat(row.total_amount));
+
+        new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                data: amounts,
+                backgroundColor: [
+                  "#1976d2",
+                  "#9c27b0",
+                  "#f57c00",
+                  "#009688",
+                  "#3f51b5",
+                  "#e91e63",
+                  "#795548",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: "right" } },
+          },
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", loadCustomerAnalytics);
+    </script>
+  </body>
 </html>

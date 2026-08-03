@@ -34,10 +34,10 @@
   </div>
   
   <script>
-    // Logout functionality
+    // Logout functionality - Route namespace modified to /auth[cite: 1]
     document.getElementById('adminLogout').addEventListener('click', async () => {
       try {
-        const response = await fetch('/logout', { method: 'POST' });
+        const response = await fetch('/auth/logout', { method: 'POST' });
         if(response.ok) {
           window.location.href = 'index.html';
         } else {
@@ -50,7 +50,7 @@
     
     async function loadEmployeeComplaintsForAdmin() {
       try {
-        // Fetch all employee complaints
+        // Fetch all employee complaints - Route namespace modified to /admin[cite: 1]
         const response = await fetch('/admin/employeeComplaints');
         if(response.ok) {
           const complaints = await response.json();
@@ -59,7 +59,6 @@
           complaints.forEach(comp => {
             const compDiv = document.createElement('div');
             compDiv.classList.add('complaint-item');
-            // Use different styling based on status
             if (comp.status === 'resolved') {
               compDiv.classList.add('resolved');
             } else {
@@ -89,7 +88,7 @@
               const details = compDiv.querySelector('.complaint-details');
               details.style.display = details.style.display === 'none' ? 'block' : 'none';
             });
-            // If unresolved, attach resolve event
+            // If unresolved, attach resolve event - Route namespace modified to /admin[cite: 1]
             const resolveBtn = compDiv.querySelector('.resolveBtn');
             if (resolveBtn) {
               resolveBtn.addEventListener('click', async function() {

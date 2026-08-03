@@ -8,39 +8,72 @@
 //   document.getElementById('quick-signup').addEventListener('click', function(){
 //     window.location.href = '#signup';
 //   });
-  
-  document.addEventListener("DOMContentLoaded", function() {
-    fetch('transactions.json')
-      .then(response => response.json())
-      .then(transactions => {
-        const container = document.querySelector('.transactions-container');
-        transactions.forEach(transaction => {
-          const box = document.createElement('div');
-          box.classList.add('transaction-box');
-          // Add class based on credit or debit
-          if (transaction.type.toLowerCase() === 'credit') {
-            box.classList.add('credit');
-          } else {
-            box.classList.add('debit');
-          }
-          // Create inner HTML with all details including time
-          box.innerHTML = `
+
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("transactions.json")
+    .then((response) => response.json())
+    .then((transactions) => {
+      const container = document.querySelector(".transactions-container");
+      transactions.forEach((transaction) => {
+        const box = document.createElement("div");
+        box.classList.add("transaction-box");
+        // Add class based on credit or debit
+        if (transaction.type.toLowerCase() === "credit") {
+          box.classList.add("credit");
+        } else {
+          box.classList.add("debit");
+        }
+        // Create inner HTML with all details including time
+        box.innerHTML = `
             <span class="trans-account">Acc: ${transaction.account}</span>
             <span class="trans-name">${transaction.name}</span>
             <span class="trans-date">${transaction.date} ${transaction.time}</span>
             <span class="trans-type">${transaction.type}</span>
             <span class="trans-amount">${transaction.amount}</span>
           `;
-          container.appendChild(box);
-        });
-      })
-      .catch(error => console.error('Error fetching transactions:', error));
-  });
-  
-  document.addEventListener("DOMContentLoaded", function() {
-    const videoPlayer = document.querySelector('.video-panel video');
-    if (videoPlayer) {
-      videoPlayer.volume = 0.2; // Set volume to 50%
-    }
-  });
-  
+        container.appendChild(box);
+      });
+    })
+    .catch((error) => console.error("Error fetching transactions:", error));
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const videoPlayer = document.querySelector(".video-panel video");
+  if (videoPlayer) {
+    videoPlayer.volume = 0.2; // Set volume to 50%
+  }
+});
+
+// File location: js/script.js
+
+function renderEmployeeSubNavbar() {
+  const container = document.getElementById("employeeSubNavbar");
+  if (!container) return;
+
+  // Master list of links for Employee portal
+  const links = [
+    { label: "Dashboard", href: "employee.html" },
+    { label: "File Complaint", href: "employeeFileComplaint.html" },
+    { label: "Resolve Complaints", href: "employeeResolveComplaint.html" },
+    { label: "Loan Approvals", href: "employeeLoans.html" },
+    {
+      label: "Approve Transactions > 50,000",
+      href: "employeeTransactions.html",
+    },
+  ];
+
+  // Detect current file name from URL path
+  const currentPath =
+    window.location.pathname.split("/").pop() || "employee.html";
+
+  container.className = "sub-navbar";
+  container.innerHTML = links
+    .map((link) => {
+      const isActive = currentPath === link.href ? 'class="active"' : "";
+      return `<a href="${link.href}" ${isActive}>${link.label}</a>`;
+    })
+    .join("");
+}
+
+// Auto-run when DOM loads
+document.addEventListener("DOMContentLoaded", renderEmployeeSubNavbar);

@@ -1,0 +1,10 @@
+# Virtual environment folder
+venv/
+.venv/
+
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+
+# Trained model files
+*.pkl
