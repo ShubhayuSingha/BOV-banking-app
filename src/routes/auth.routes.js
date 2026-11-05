@@ -40,6 +40,53 @@ async function verifyTotpToken(token, secret) {
   }
 }
 
+// REGISTRATION: Customer Registration
+router.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).send("Username and password are required.");
+  }
+
+  const cleanUsername = String(username).trim();
+  if (cleanUsername.length < 3) {
+    return res.status(400).send("Username must be at least 3 characters long.");
+  }
+
+  if (String(password).length < 3) {
+    return res.status(400).send("Password must be at least 3 characters long.");
+  }
+
+  try {
+    // Check if username already exists in customers
+    const existingUser = await pool.query(
+      "SELECT id FROM customers WHERE LOWER(username) = LOWER($1)",
+      [cleanUsername],
+    );
+
+    if (existingUser.rowCount > 0) {
+      return res
+        .status(409)
+        .send("Username is already taken. Please choose another.");
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    await pool.query(
+      "INSERT INTO customers (username, password, balance, two_factor_enabled) VALUES ($1, $2, $3, $4)",
+      [cleanUsername, hashedPassword, 1000.0, false],
+    );
+
+    return res.status(201).send("Customer registered successfully.");
+  } catch (error) {
+    console.error("Customer registration error:", error);
+    return res
+      .status(500)
+      .send("An error occurred while creating the account.");
+  }
+});
+
 // STAGE 1: Check Username Existence & Account Lock Status under a Specific Role
 router.post("/login/check-user", async (req, res) => {
   const { username, role } = req.body;

@@ -80,6 +80,17 @@
           <label for="amount">Amount (INR):</label>
           <input type="number" id="amount" name="amount" step="0.01" required />
 
+          <label for="category">Category:</label>
+          <select id="category" name="category" required>
+            <option value="Transfer" selected>Transfer</option>
+            <option value="Education">Education</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Rent">Rent</option>
+            <option value="Salary">Salary</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Utilities">Utilities</option>
+          </select>
+
           <button type="submit" id="sendBtn">
             <span id="btnText">Send</span>
           </button>
@@ -222,6 +233,7 @@
           const data = {
             recipient: formData.get("recipient"),
             amount: parseFloat(formData.get("amount")),
+            category: formData.get("category"),
           };
 
           try {

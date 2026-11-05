@@ -26,13 +26,15 @@
   }
   
   .send-money-form input[type="text"],
-  .send-money-form input[type="number"] {
+  .send-money-form input[type="number"],
+  .send-money-form select {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 1rem;
+    background-color: #fff;
   }
   
   /* Style the Send button */

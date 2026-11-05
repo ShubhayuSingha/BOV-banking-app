@@ -143,7 +143,7 @@
 
     <!-- Sub-navbar links -->
     <div class="sub-navbar">
-      <div id="employeeSubNavbar" style="display: inline-block;"></div>
+      <div id="employeeSubNavbar" style="display: inline-block"></div>
       <button class="btn-2fa" id="setup2faBtn" onclick="open2FAModal()">
         ENABLE 2FA
       </button>
@@ -155,7 +155,8 @@
         <span class="close-modal" onclick="close2FAModal()">&times;</span>
         <h3>Employee 2FA Setup</h3>
         <p style="font-size: 0.9rem; color: #555">
-          Scan this QR code with Google Authenticator or Microsoft Authenticator:
+          Scan this QR code with Google Authenticator or Microsoft
+          Authenticator:
         </p>
         <img id="qrCodeImg" src="" alt="2FA QR Code Setup" />
         <p style="font-size: 0.8rem; color: #777">
@@ -191,7 +192,7 @@
           Resolve Complaints
         </button>
         <button onclick="window.location.href = 'employeeTransactions.html'">
-          Approve Transactions &gt; 50,000
+          Approve Transactions
         </button>
         <button onclick="window.location.href = 'employeeFileComplaint.html'">
           File Complaint for Admin

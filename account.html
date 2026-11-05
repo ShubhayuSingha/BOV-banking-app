@@ -31,6 +31,43 @@
         border-bottom: 2px solid #f0f0f0;
         padding-bottom: 8px;
       }
+      .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+      }
+      .card-header-row h3 {
+        margin: 0;
+        padding: 0;
+        border: none;
+      }
+      .chart-nav-controls {
+        display: flex;
+        gap: 6px;
+      }
+      .chart-nav-btn {
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: #333;
+        transition: all 0.2s ease;
+      }
+      .chart-nav-btn:hover:not(:disabled) {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #ffffff;
+      }
+      .chart-nav-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
       @media (max-width: 768px) {
         .analytics-section {
           flex-direction: column;
@@ -214,7 +251,13 @@
     <!-- Analytics Dashboard Section -->
     <div class="analytics-section">
       <div class="analytics-card">
-        <h3>Monthly Cashflow</h3>
+        <div class="card-header-row">
+          <h3>Monthly Cashflow</h3>
+          <div class="chart-nav-controls">
+            <button id="prev6MonthsBtn" class="chart-nav-btn" title="Back 6 Months">◀ Older 6 Mo</button>
+            <button id="next6MonthsBtn" class="chart-nav-btn" title="Forward 6 Months" disabled>Newer 6 Mo ▶</button>
+          </div>
+        </div>
         <canvas id="cashflowChart"></canvas>
       </div>
       <div class="analytics-card">
@@ -478,13 +521,32 @@
 
     <!-- Chart.js Analytics Fetcher & Renderer -->
     <script>
+      let cashflowOffset = 0;
+      let cashflowChartInstance = null;
+
+      async function fetchAndRenderCashflow(offset = 0) {
+        try {
+          const cashflowRes = await fetch(`/api/analytics/customer/cashflow?offset=${offset}`);
+          if (cashflowRes.ok) {
+            const result = await cashflowRes.json();
+            const rows = Array.isArray(result) ? result : (result.data || []);
+            cashflowOffset = typeof result.offset === "number" ? result.offset : offset;
+
+            renderCashflowChart(rows);
+
+            const prevBtn = document.getElementById("prev6MonthsBtn");
+            const nextBtn = document.getElementById("next6MonthsBtn");
+            if (prevBtn) prevBtn.disabled = !result.hasOlder;
+            if (nextBtn) nextBtn.disabled = !result.hasNewer;
+          }
+        } catch (error) {
+          console.error("Cashflow Load Error:", error);
+        }
+      }
+
       async function loadCustomerAnalytics() {
         try {
-          const cashflowRes = await fetch("/api/analytics/customer/cashflow");
-          if (cashflowRes.ok) {
-            const cashflowData = await cashflowRes.json();
-            renderCashflowChart(cashflowData);
-          }
+          await fetchAndRenderCashflow(0);
 
           const categoryRes = await fetch("/api/analytics/customer/categories");
           if (categoryRes.ok) {
@@ -509,7 +571,11 @@
         const income = data.map((row) => parseFloat(row.total_income));
         const expense = data.map((row) => parseFloat(row.total_expense));
 
-        new Chart(ctx, {
+        if (cashflowChartInstance) {
+          cashflowChartInstance.destroy();
+        }
+
+        cashflowChartInstance = new Chart(ctx, {
           type: "bar",
           data: {
             labels: labels,
@@ -528,6 +594,18 @@
           },
         });
       }
+
+      document
+        .getElementById("prev6MonthsBtn")
+        ?.addEventListener("click", () => {
+          fetchAndRenderCashflow(cashflowOffset + 6);
+        });
+
+      document
+        .getElementById("next6MonthsBtn")
+        ?.addEventListener("click", () => {
+          fetchAndRenderCashflow(Math.max(0, cashflowOffset - 6));
+        });
 
       function renderCategoryChart(data) {
         const ctx = document.getElementById("categoryChart").getContext("2d");

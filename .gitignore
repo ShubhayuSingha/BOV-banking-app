@@ -8,3 +8,10 @@ __pycache__/
 venv/
 .venv/
 .pytest_cache/
+
+
+# Interview Prep
+Z_EY_1.md 
+Z_EY_2.md 
+Z_EY_3.md 
+TCS_PRIME_INTERVIEW_GUIDE.md

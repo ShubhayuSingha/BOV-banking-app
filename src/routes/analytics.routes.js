@@ -17,24 +17,44 @@ function isAuthenticated(req, res, next) {
 // ==========================================
 
 // GET /api/analytics/customer/cashflow
-// Returns monthly debits vs credits for the logged-in customer
+// Returns 6-month monthly debits vs credits window for the logged-in customer
 router.get("/customer/cashflow", isAuthenticated, async (req, res) => {
   const username = req.session.user.username;
+  const offset = Math.max(0, parseInt(req.query.offset || "0", 10));
 
   try {
-    const query = `
-      SELECT 
-        DATE_TRUNC('month', timestamp) AS month,
-        SUM(CASE WHEN receiver = $1 THEN amount ELSE 0 END) AS total_income,
-        SUM(CASE WHEN sender = $1 THEN amount ELSE 0 END) AS total_expense
+    const countQuery = `
+      SELECT COUNT(DISTINCT DATE_TRUNC('month', timestamp)) AS total_months
       FROM transactions
-      WHERE (sender = $1 OR receiver = $1) AND status = 'APPROVED'
-      GROUP BY month
-      ORDER BY month ASC
-      LIMIT 6;
+      WHERE (sender = $1 OR receiver = $1) AND status = 'APPROVED';
     `;
-    const result = await pool.query(query, [username]);
-    res.json(result.rows);
+    const countRes = await pool.query(countQuery, [username]);
+    const totalMonths = parseInt(countRes.rows[0]?.total_months || "0", 10);
+
+    const query = `
+      WITH monthly_window AS (
+        SELECT 
+          DATE_TRUNC('month', timestamp) AS month,
+          SUM(CASE WHEN receiver = $1 THEN amount ELSE 0 END) AS total_income,
+          SUM(CASE WHEN sender = $1 THEN amount ELSE 0 END) AS total_expense
+        FROM transactions
+        WHERE (sender = $1 OR receiver = $1) AND status = 'APPROVED'
+        GROUP BY month
+        ORDER BY month DESC
+        OFFSET $2 LIMIT 6
+      )
+      SELECT * FROM monthly_window
+      ORDER BY month ASC;
+    `;
+    const result = await pool.query(query, [username, offset]);
+
+    res.json({
+      data: result.rows,
+      offset,
+      totalMonths,
+      hasOlder: offset + 6 < totalMonths,
+      hasNewer: offset > 0,
+    });
   } catch (err) {
     console.error("Error fetching customer cashflow:", err);
     res.status(500).json({ error: "Failed to calculate cashflow analytics" });
